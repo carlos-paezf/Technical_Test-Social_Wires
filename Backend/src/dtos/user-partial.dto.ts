@@ -1,8 +1,9 @@
 import { IsOptional, IsString, IsEmail, MaxLength, MinLength } from 'class-validator'
+import { BaseDTO } from '../config'
 import { IUser } from "../interfaces"
 
 
-export class UserUpdateDTO implements Partial<IUser> {
+export class UserPartialDTO extends BaseDTO implements Partial<IUser> {
     @IsOptional()
     @IsString()
     @MinLength( 6 )

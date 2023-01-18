@@ -24,13 +24,16 @@ export class UserController extends BaseController<UserService> {
      * @returns An object with the sent values of from, limit, all, order, the number of 
      * records returned by the query, the total number of records, and the array of users
     */
-    public async findUsers ( req: Request, res: Response ) {
+    public findUsers = async ( req: Request, res: Response ) => {
         try {
             const { from = 0, limit = 10, all = false, order = 'ASC' } = req.query
 
-            const { 0: data, 1: totalCount } = await this._service.findUsers(
-                Number( from ), Number( limit ), Boolean( all ), String( order ).toUpperCase()
-            )
+            const { 0: data, 1: totalCount } = await this._service.findUsers( {
+                from: Number( from ),
+                limit: Number( limit ),
+                all: Boolean( all ),
+                order: String( order ).toUpperCase()
+            } )
             if ( !totalCount || !data.length ) return this._httpResponse.NotFound( res, `There are no results for the search` )
 
             return this._httpResponse.Ok( res, {
@@ -40,6 +43,27 @@ export class UserController extends BaseController<UserService> {
             } )
         } catch ( error ) {
             console.log( red( `Error in UserController:findUsers: ` ), error )
+            return this._httpResponse.InternalServerError( res, error )
+        }
+    }
+
+    /**
+     * It's a function that receives a request and a response, and it returns a response
+     * @param {Request} req - Request -&gt; The request object
+     * @param {Response} res - Response =&gt; The response object
+     * @returns The data from the database.
+     */
+    public findUserById = async ( req: Request, res: Response ) => {
+        try {
+            const { id } = req.params
+
+            const data = await this._service.findOneUserById( { id, withPost: true } )
+
+            if ( !data ) return this._httpResponse.NotFound( res, `There are no results for the id '${ id }'` )
+
+            return this._httpResponse.Ok( res, data )
+        } catch ( error ) {
+            console.log( red( 'Error en UserController:findUserById: ' ), error )
             return this._httpResponse.InternalServerError( res, error )
         }
     }

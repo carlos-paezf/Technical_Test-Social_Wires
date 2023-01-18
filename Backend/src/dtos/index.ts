@@ -1,3 +1,4 @@
-export { UserUpdateDTO } from './user-update.dto'
+export { PostDTO } from './post.dto'
+export { UserPartialDTO } from './user-partial.dto'
 export { UserDTO } from './user.dto'
 

@@ -1,6 +1,7 @@
 import { validate } from "class-validator"
+import { red } from "colors"
 import { NextFunction, Request, Response } from "express"
-import { UserDTO } from "../dtos"
+import { UserDTO, UserPartialDTO } from "../dtos"
 import { UserService } from "../services"
 import { HttpResponse } from "../shared/response/http.response"
 
@@ -18,6 +19,36 @@ export class UserMiddleware {
     constructor () {
         this._service = new UserService()
         this._httpResponse = new HttpResponse()
+    }
+
+
+    /**
+     * It's a middleware function that validates the id parameter of the request object
+     * @param {Request} req - Request, res: Response, next: NextFunction
+     * @param {Response} res - Response -&gt; The response object
+     * @param {NextFunction} next - NextFunction
+     * @returns The next() function is being returned.
+     */
+    public idParamValidator = async ( req: Request, res: Response, next: NextFunction ) => {
+        try {
+            const { id } = req.params
+            const valid = new UserPartialDTO()
+
+            valid.id = id
+
+            validate( valid ).then( async ( error ) => {
+                if ( error.length ) {
+                    return this._httpResponse.PreconditionFailed( res, error )
+                } else {
+                    const data = await this._service.findOneUserById( { id, withPost: false } )
+                    if ( !data ) return this._httpResponse.NotFound( res, `There are no results for the id '${ id }'` )
+                    return next()
+                }
+            } )
+        } catch ( error ) {
+            console.log( red( 'Error en UserMiddleware:idParamValidator: ' ), error )
+            return this._httpResponse.InternalServerError( res, error )
+        }
     }
 
     /**

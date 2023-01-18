@@ -1,4 +1,3 @@
-import { Request, Response } from "express"
 import { BaseRouter } from "../config"
 import { UserController } from "../controllers"
 import { UserMiddleware } from "../middlewares"
@@ -15,6 +14,10 @@ export class UserRouter extends BaseRouter<UserController, UserMiddleware> {
     }
 
     protected routes (): void {
-        this.router.get( '/users', ( req: Request, res: Response ) => this.controller.findUsers( req, res ) )
+        this.router.param( 'id', this.middleware.idParamValidator )
+
+        this.router.get( '/users', this.controller.findUsers )
+
+        this.router.get( '/users/:id', this.controller.findUserById )
     }
 }

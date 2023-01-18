@@ -6,7 +6,7 @@ import "reflect-metadata"
 import { DataSource } from "typeorm"
 import { AuthRouter } from "./auth/router/auth.router"
 import { ConfigServer } from "./config"
-import { UserRouter } from "./router"
+import { PostRouter, UserRouter } from "./router"
 
 
 /**
@@ -38,7 +38,8 @@ class ServerBootstrap extends ConfigServer {
      */
     private _routers (): express.Router[] {
         return [
-            new UserRouter().router
+            new UserRouter().router,
+            new PostRouter().router
         ]
     }
 

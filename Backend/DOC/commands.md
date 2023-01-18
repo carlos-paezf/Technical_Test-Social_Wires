@@ -25,6 +25,18 @@ $: docker-compose up -d
 ```
 
 ```txt
+$: pnpm db:up
+```
+
+```txt
+$: docker-compose down --volumes
+```
+
+```txt
+$: pnpm db:down
+```
+
+```txt
 $: pnpm start:dev
 ```
 

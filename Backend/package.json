@@ -10,7 +10,8 @@
         "typeorm": "typeorm-ts-node-esm -d ./src/config/data.config.ts",
         "m:gen": "npm run typeorm migration:generate",
         "m:run": "npm run typeorm migration:run",
-        "db:run": "docker-compose up -d"
+        "db:up": "docker-compose up -d",
+        "db:down": "docker-compose down --volumes"
     },
     "keywords": [],
     "author": "https://github.com/carlos-paezf",

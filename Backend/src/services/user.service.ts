@@ -1,6 +1,6 @@
 import { UpdateResult } from "typeorm"
 import { BaseService } from "../config"
-import { UserDTO, UserUpdateDTO } from "../dtos"
+import { UserDTO, UserPartialDTO } from "../dtos"
 import { UserEntity } from "../entities"
 import { PasswordEncrypter } from "../helpers/password-encrypter.helper"
 
@@ -26,7 +26,9 @@ export class UserService extends BaseService<UserEntity> {
      * @param [order=ASC] - { username: ( order === 'ASC' ) ? 'ASC' : 'DESC' }
      * @returns An array of UserEntity and a number.
      */
-    public async findUsers ( from: number, limit: number, all = false, order = 'ASC' ): Promise<[ UserEntity[], number ]> {
+    public async findUsers (
+        { from, limit, all, order }: { from: number, limit: number, all?: boolean, order?: string }
+    ): Promise<[ UserEntity[], number ]> {
         return ( await this.execRepository ).findAndCount( {
             skip: from,
             take: limit,
@@ -41,9 +43,10 @@ export class UserService extends BaseService<UserEntity> {
      * @param {string} id - string
      * @returns The user entity
      */
-    public async findOneUserById ( id: string ): Promise<UserEntity | null> {
+    public async findOneUserById ( { id, withPost }: { id: string, withPost: boolean } ): Promise<UserEntity | null> {
         return ( await this.execRepository ).findOne( {
             where: { id },
+            relations: { posts: withPost }
         } )
     }
 
@@ -91,7 +94,7 @@ export class UserService extends BaseService<UserEntity> {
      * @param {UserUpdateDTO} body - UserUpdateDTO
      * @returns UpdateResult
      */
-    public async updateUser ( id: string, body: UserUpdateDTO ): Promise<UpdateResult> {
+    public async updateUser ( id: string, body: UserPartialDTO ): Promise<UpdateResult> {
         return ( await this.execRepository ).update( id, { ...body, updatedAt: new Date() } )
     }
 }
