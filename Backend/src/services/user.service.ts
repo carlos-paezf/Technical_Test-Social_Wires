@@ -14,6 +14,10 @@ import { PasswordEncrypter } from "../helpers/password-encrypter.helper"
  * @author Carlos Páez
  */
 export class UserService extends BaseService<UserEntity> {
+    constructor () {
+        super( UserEntity )
+    }
+
     /**
      * It returns a promise of an array of UserEntity objects and a number
      * @param {number} from - number - The number of records to skip.
@@ -27,7 +31,19 @@ export class UserService extends BaseService<UserEntity> {
             skip: from,
             take: limit,
             order: { username: ( order === 'ASC' ) ? 'ASC' : 'DESC' },
+            select: { password: false },
             withDeleted: all
+        } )
+    }
+
+    /**
+     * Find one user by id
+     * @param {string} id - string
+     * @returns The user entity
+     */
+    public async findOneUserById ( id: string ): Promise<UserEntity | null> {
+        return ( await this.execRepository ).findOne( {
+            where: { id },
         } )
     }
 
@@ -37,22 +53,24 @@ export class UserService extends BaseService<UserEntity> {
      * @returns A UserEntity object with the password property.
      */
     public async findUserByEmail ( email: string ): Promise<UserEntity | null> {
-        return ( await this.execRepository ).findOne( {
-            where: { email },
-            select: { id: true, password: true }
-        } )
+        return ( await this.execRepository )
+            .createQueryBuilder( "user" )
+            .where( "LOWER(user.email) = LOWER(:email)", { email } )
+            .addSelect( "user.password" )
+            .getOne()
     }
 
     /**
      * Find a user by username, and return the user's password.
      * @param {string} username - string
      * @returns A UserEntity object with the password property.
-     */
+    */
     public async findUserByUsername ( username: string ): Promise<UserEntity | null> {
-        return ( await this.execRepository ).findOne( {
-            where: { username },
-            select: { id: true, password: true }
-        } )
+        return ( await this.execRepository )
+            .createQueryBuilder( "user" )
+            .where( "LOWER(user.username) = LOWER(:username)", { username } )
+            .addSelect( "user.password" )
+            .getOne()
     }
 
     /**

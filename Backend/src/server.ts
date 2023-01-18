@@ -4,6 +4,7 @@ import express from "express"
 import morgan from "morgan"
 import "reflect-metadata"
 import { DataSource } from "typeorm"
+import { AuthRouter } from "./auth/router/auth.router"
 import { ConfigServer } from "./config"
 import { UserRouter } from "./router"
 
@@ -23,7 +24,9 @@ class ServerBootstrap extends ConfigServer {
 
         this._dbConnect()
         this._middlewares()
-        this._app.use( '/api', this._routers )
+
+        this._app.use( '/auth/', new AuthRouter().router )
+        this._app.use( '/api/', this._routers() )
 
         this._listen()
     }
@@ -32,7 +35,7 @@ class ServerBootstrap extends ConfigServer {
     /**
      * It returns an array of express routers
      * @returns An array of express.Router objects.
-    */
+     */
     private _routers (): express.Router[] {
         return [
             new UserRouter().router
@@ -54,7 +57,7 @@ class ServerBootstrap extends ConfigServer {
     /**
     * This function is used to set up the middlewares for the express application.
     */
-    private _middlewares = (): void => {
+    private _middlewares (): void {
         this._app.use( express.json( { limit: "10mb" } ) )
         this._app.use( express.urlencoded( { limit: "10mb", extended: true, parameterLimit: 1000000 } ) )
         this._app.use( morgan( 'common' ) )

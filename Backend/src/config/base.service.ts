@@ -6,15 +6,16 @@ import { ConfigServer } from "./config"
 /**
  * A base class that is used to create a repository for the entity passed to it.
  * @class
+ * @abstract
  * @extends ConfigServer
  * @author Carlos Páez
  */
-export class BaseService<T extends BaseEntity> extends ConfigServer {
+export abstract class BaseService<T extends BaseEntity> extends ConfigServer {
     public execRepository: Promise<Repository<T>>
 
     constructor ( private _getEntity: EntityTarget<T> ) {
         super()
-        this.execRepository = this.initRepository( _getEntity )
+        this.execRepository = this.initRepository( this._getEntity )
     }
 
     /**
@@ -22,8 +23,7 @@ export class BaseService<T extends BaseEntity> extends ConfigServer {
      * @param entity - EntityTarget<T>
      * @returns A promise that resolves to a Repository<T>
      */
-    public async initRepository ( entity: EntityTarget<T> ): Promise<Repository<T>> {
-        const getConnection = await this.dbConnection
-        return getConnection.getRepository( entity )
+    public initRepository = async ( entity: EntityTarget<T> ): Promise<Repository<T>> => {
+        return ( await this.dbConnection ).getRepository( entity )
     }
 }

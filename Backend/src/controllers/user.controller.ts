@@ -23,7 +23,7 @@ export class UserController extends BaseController<UserService> {
      * @param {Response} res - Response =&gt; Express Response object
      * @returns An object with the sent values of from, limit, all, order, the number of 
      * records returned by the query, the total number of records, and the array of users
-     */
+    */
     public async findUsers ( req: Request, res: Response ) {
         try {
             const { from = 0, limit = 10, all = false, order = 'ASC' } = req.query

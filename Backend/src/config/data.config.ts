@@ -1,7 +1,7 @@
-import { DataSource, DataSourceOptions } from "typeorm"
 import * as dotenv from 'dotenv'
-import { SnakeNamingStrategy } from 'typeorm-naming-strategies'
 import path from "path"
+import { DataSource, DataSourceOptions } from "typeorm"
+import { SnakeNamingStrategy } from 'typeorm-naming-strategies'
 
 
 /* Loading the environment variables from the .env file. */
