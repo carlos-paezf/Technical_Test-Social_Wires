@@ -1,7 +1,9 @@
 import { validate } from "class-validator"
 import { red } from "colors"
 import { NextFunction, Request, Response } from "express"
+import { AuthService } from "../auth/services/auth.service"
 import { UserDTO, UserPartialDTO } from "../dtos"
+import { ITokenPayload } from "../interfaces"
 import { UserService } from "../services"
 import { HttpResponse } from "../shared/response/http.response"
 
@@ -16,7 +18,7 @@ export class UserMiddleware {
     private readonly _service: UserService
     private readonly _httpResponse: HttpResponse
 
-    constructor () {
+    constructor ( private _authService: AuthService = new AuthService() ) {
         this._service = new UserService()
         this._httpResponse = new HttpResponse()
     }
@@ -99,5 +101,40 @@ export class UserMiddleware {
         validate( valid ).then( ( error ) => {
             return error.length ? this._httpResponse.PreconditionFailed( res, error ) : next()
         } )
+    }
+
+    /**
+     * It takes a JWT from the request header, verifies it, and then adds the payload to the request object
+     * @param {Request} req - Request - The request object
+     * @param {Response} res - Response - the response object
+     * @param {NextFunction} next - NextFunction
+     * @returns The function validateJWT is being returned.
+     */
+    public validateJWT = async ( req: Request, res: Response, next: NextFunction ) => {
+        try {
+            let jwt = req.headers.authorization
+            if ( !jwt ) return this._httpResponse.Unauthorized( res, `Token not found` )
+
+            try {
+                if ( jwt.toLocaleLowerCase().startsWith( 'bearer' ) ) {
+                    jwt = jwt.slice( 'bearer'.length ).trim()
+                }
+                if ( !jwt ) return this._httpResponse.Unauthorized( res, `Token Not Found` )
+
+                const payload = await this._authService.verifyJWT( jwt ) as ITokenPayload
+
+                req.user = payload
+                next()
+                // eslint-disable-next-line
+            } catch ( error: any ) {
+                if ( error.name === 'TokenExpiredError' ) return this._httpResponse.Unauthorized( res, `Expired JWT` )
+
+                // console.log(red(`Error un AuthMiddleware: validateJWT: `), error)
+                return this._httpResponse.BadRequest( res, error )
+            }
+        } catch ( error ) {
+            console.log( red( `Error un AuthMiddleware: validateJWT: ` ), error )
+            return this._httpResponse.InternalServerError( res, error )
+        }
     }
 }

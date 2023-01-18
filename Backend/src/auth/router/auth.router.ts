@@ -21,6 +21,14 @@ export class AuthRouter extends BaseRouter<AuthController, UserMiddleware> {
         )
 
         this.router.get(
+            '/renew-token',
+            [
+                this.middleware.validateJWT
+            ],
+            this.controller.renewToken
+        )
+
+        this.router.get(
             '/validate',
             this.controller.validateExistsEmailOrUsername
         )

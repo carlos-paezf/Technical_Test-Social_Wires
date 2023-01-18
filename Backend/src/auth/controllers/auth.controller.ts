@@ -1,5 +1,6 @@
 import { red } from "colors"
 import { Request, Response } from "express"
+import { UserEntity } from "../../entities"
 
 import { HttpResponse } from "../../shared/response/http.response"
 import { AuthService } from "../services/auth.service"
@@ -92,6 +93,27 @@ export class AuthController extends AuthService {
             return this._httpResponse.Ok( res, { isUnique: true } )
         } catch ( error ) {
             console.log( red( `Error in AuthController:validateExistsEmailOrUsername: ` ), error )
+            return this._httpResponse.InternalServerError( res, error )
+        }
+    }
+
+    /**
+     * If the user is found in the request, save the user and JWT in the request.
+     * @param {Request} req - Request - The request object
+     * @param {Response} res - Response =&gt; Express.Response
+     * @returns The user and the JWT token
+     */
+    public renewToken = async ( req: Request, res: Response ) => {
+        try {
+            const user = req.user as UserEntity
+            if ( !user ) return this._httpResponse.NotFound( res, `No user found in the request` )
+
+            const encode = await this.generateJWT( user.id )
+            if ( !encode ) return this._httpResponse.Unauthorized( res, `You do not have permission to access` )
+
+            return this._httpResponse.Ok( res, encode )
+        } catch ( error ) {
+            console.log( red( `Error in AuthController:renewToken: ` ), error )
             return this._httpResponse.InternalServerError( res, error )
         }
     }
