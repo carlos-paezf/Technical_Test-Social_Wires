@@ -1,0 +1,68 @@
+<div class="auth__card">
+
+    <h1>Regístrate aquí</h1>
+
+    <form [formGroup]="registerForm" class="auth__form">
+        <div class="auth__form-card">
+            <div class="auth__form-input-section">
+                <input type="text" formControlName="username" class="text-input" placeholder="Nickname" name="username"
+                    id="username">
+                <label class="label" for="username">Username</label>
+                <span error-msg [color]="colorError" [message]="usernameError"
+                    [invalid]="isInvalidField(registerForm, 'username')"></span>
+            </div>
+        </div>
+
+        <div class="auth__form-card">
+            <div class="auth__form-input-section">
+                <input type="text" formControlName="fullName" class="text-input" placeholder="Full Name" name="fullName"
+                    id="fullName">
+                <label class="label" for="fullName">Full Name</label>
+                <span error-msg [color]="colorError" [message]="fullNameError"
+                    [invalid]="isInvalidField(registerForm, 'fullName')"></span>
+            </div>
+        </div>
+
+        <div class="auth__form-card">
+            <div class="auth__form-input-section">
+                <input type="text" formControlName="email" class="text-input" placeholder="Email Address" name="email"
+                    id="email">
+                <label class="label" for="email">Email Address</label>
+                <span error-msg [color]="colorError" [message]="emailError"
+                    [invalid]="isInvalidField(registerForm, 'email')"></span>
+            </div>
+        </div>
+
+        <div class="auth__form-card">
+            <div class="auth__form-input-section">
+                <input type="password" formControlName="password" class="password-input" placeholder="Password"
+                    name="password" id="password-register">
+                <label class="label" for="password-register">Password</label>
+                <span class="password-toggle" id="toggle-register">
+                    <i class="pi pi-eye" appInputPassword idInput="password-register" idToggle="toggle-register"></i>
+                </span>
+                <span error-msg [color]="colorError" [message]="passwordError"
+                    [invalid]="isInvalidField(registerForm, 'password')"></span>
+            </div>
+        </div>
+
+        <div class="auth__form-card">
+            <div class="auth__form-input-section">
+                <input type="password" formControlName="confirmPassword" class="password-input"
+                    placeholder="Confirm Password" name="confirmPassword" id="confirmPassword">
+                <label class="label" for="confirmPassword">Confirm Password</label>
+                <span class="password-toggle" id="toggle-confirm">
+                    <i class="pi pi-eye" appInputPassword idInput="confirmPassword" idToggle="toggle-confirm"></i>
+                </span>
+                <span error-msg [color]="colorError" [message]="confirmPasswordError"
+                    [invalid]="isInvalidField(registerForm, 'confirmPassword')"></span>
+            </div>
+        </div>
+
+        <button class="btn btn__primary" type="submit" [disabled]="registerForm.pending" (click)="register()">
+            Enviar Solicitud
+        </button>
+    </form>
+
+    <a [routerLink]="['/auth/login']" class="auth__link">¿Ya tienes una cuenta? Ingresa aquí 👈</a>
+</div>

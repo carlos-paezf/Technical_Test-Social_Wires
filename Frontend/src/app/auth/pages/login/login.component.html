@@ -1,0 +1,34 @@
+<div class="auth__card animate__animated animate__fadeIn">
+
+    <h1 class="mb-1">Sign in</h1>
+
+    <form [formGroup]="loginForm" class="auth__form">
+        <div class="auth__form-card">
+            <div class="auth__form-input-section">
+                <input type="text" id="emailOrUsername" class="text-input" formControlName="emailOrUsername"
+                    placeholder="Username o Email" autocomplete="off">
+                <label for="emailOrUsername" class="label">Username or Email Address</label>
+                <span error-msg [color]="colorError" [message]="emailOrUsernameError"
+                    [invalid]="isInvalidField(loginForm, 'emailOrUsername')"></span>
+            </div>
+        </div>
+
+        <div class="auth__form-card">
+            <div class="auth__form-input-section">
+                <input type="password" id="password-login" class="password-input" formControlName="password"
+                    placeholder="Contraseña">
+                <label for="password-login" class="label">Password</label>
+                <span id="toggle-login" class="password-toggle">
+                    <i appInputPassword idInput="password-login" idToggle="toggle-login" class="pi pi-eye"></i>
+                </span>
+                <span error-msg [color]="colorError" [message]="passwordError"
+                    [invalid]="isInvalidField(loginForm, 'password')"></span>
+            </div>
+        </div>
+
+        <button class="btn btn__primary mt-1" type="submit" (click)="login()" [disabled]="loginForm.pending">Sign
+            In</button>
+    </form>
+
+    <a [routerLink]="['/auth/register']" class="auth__link">Regístrate aquí 👈</a>
+</div>
